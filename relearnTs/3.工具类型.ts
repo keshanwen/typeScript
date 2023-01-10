@@ -145,3 +145,56 @@ type myExtract<T, U> = T extends U ? T : never;
 type T3 = Extract<"a" | "b" | "c", "a" | "f">; // "a"
 type T4 = Extract<string | number | (() => void), Function>; // () =>void
 
+// 3.8 Omit<T, K extends keyof any> 的作用是使用 T 类型中除了 K 类型的所有属性，来构造一个新的类型。
+type myOmit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+
+interface Todo {
+    title: string;
+    description: string;
+    completed: boolean;
+  }
+  
+  type TodoPreviews = Omit<Todo, "description">;
+  
+  const todos: TodoPreviews = {
+    title: "Clean room",
+    completed: false
+  };
+
+// 3.9 NonNullable<T> 的作用是用来过滤类型中的 null 及 undefined 类型。
+type myNonNullable<T> = T extends null | undefined ? never : T;
+type T10 = NonNullable<string | number | undefined>; // string | number
+type T11 = NonNullable<string[] | null | undefined>; // string[]
+
+
+// 3.10 ReturnType<T> 的作用是用于获取函数 T 的返回类型。
+type myReturnTypes<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : never
+
+
+// 3.11 InstanceType 的作用是获取构造函数类型的实例类型。
+
+type myInstanceType<T extends new (...args: any) => any> = T extends new (...args: any) => infer R ? R : any;
+
+// 3.12 ThisType<T> 的作用是用于指定上下文对象的类型。
+//注意：使用 ThisType<T> 时，必须确保 --noImplicitThis 标志设置为 true
+interface Person {
+    name: string;
+    age: number;
+}
+
+const obj: ThisType<Person> = {
+  dosth() {
+    this.name // string
+  }
+}
+
+// 3.13 Parameters<T> 的作用是用于获得函数的参数类型组成的元组类型。
+type myParameters<T extends (...args: any) => any> = T extends (...args: infer P) => any
+  ? P : never;
+
+
+  type A = Parameters<() =>void>; // []
+  type B = Parameters<typeof Array.isArray>; // [any]
+  type C = Parameters<typeof parseInt>; // [string, (number | undefined)?]
+  type D = Parameters<typeof Math.max>; // number[]  
+
